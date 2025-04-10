@@ -1,36 +1,34 @@
 'use strict';
-
 /**
  * @param {Object} state
  * @param {Object[]} actions
  *
  * @return {Object[]}
  */
+
 function transformStateWithClones(state, actions) {
-  const updatedState = [];
   let newState = { ...state };
+  const states = [];
 
-  for (const action of actions) {
-    if (action.type === 'addProperties') {
-      newState = { ...newState, ...action.extraData };
+  for (const i of actions) {
+    switch (i.type) {
+      case 'addProperties':
+        newState = { ...newState, ...i.extraData };
+        break;
+      case 'removeProperties':
+        newState = { ...newState };
+
+        for (const key of i.keysToRemove) {
+          delete newState[key];
+        }
+        break;
+      case 'clear':
+        newState = {};
+        break;
     }
-
-    if (action.type === 'removeProperties') {
-      newState = { ...newState };
-
-      for (const item of action.keysToRemove) {
-        delete newState[item];
-      }
-    }
-
-    if (action.type === 'clear') {
-      newState = {};
-    }
-
-    updatedState.push(newState);
+    states.push({ ...newState });
   }
 
-  return updatedState;
+  return states;
 }
-
 module.exports = transformStateWithClones;
